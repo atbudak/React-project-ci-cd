@@ -29,12 +29,13 @@ build_nodejs_image:
   tags:
     - gitlab-org-docker
   script:
-    - date && pwd
+    - date && pwd && ls -altr
     - docker --version
-    - docker login -u ahmet1162 --password-stdin Ab12345!
+    - docker login -u AWS -p $(aws ecr get-login-password --region us-east-1) $ECR_REGISTER 
     - docker build -t $REPO_NAME:${CI_COMMIT_SHORT_SHA} .
     - docker image ls
     - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTER   
+    
     - docker push $ECR_REGISTERY/$REPO_NAME:${CI_COMMIT_SHORT_SHA}
   rules:
     - if: ($CI_COMMIT_BRANCH == "main") # && ($CI_PIPELINE_SOURCE == "schedule")
