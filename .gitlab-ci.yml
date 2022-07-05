@@ -30,7 +30,7 @@ build_nodejs_image:
     - gitlab-org-docker
   
   before_script:
-    - apt-get install curl -y
+    - yum install curl -y
     - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     - unzip awscliv2.zip
     - ./aws/install
