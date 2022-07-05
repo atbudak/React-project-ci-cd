@@ -27,7 +27,7 @@ variables:
 build_nodejs_image:
   stage: build
   tags:
-    - docker_build_runner
+    - gitlab-org-docker
   script:
     - date && pwd
     - docker build -t $REPO_NAME:${CI_COMMIT_SHORT_SHA} .
