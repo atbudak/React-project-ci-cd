@@ -31,7 +31,7 @@ build_nodejs_image:
   script:
     - date && pwd
     - docker --version
-    - docker login -u ahmet1162 -p Ab12345!
+    - docker login -u ahmet1162 --password-stdin Ab12345!
     - docker build -t $REPO_NAME:${CI_COMMIT_SHORT_SHA} .
     - docker image ls
     - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REGISTER   
