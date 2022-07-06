@@ -11,15 +11,13 @@ variables:
 
 build_react_image:
   stage: build
-  tags:
-    - shell_runner_01
   image: 
     name: amazon/aws-cli
     entrypoint: [""]
   services:
     - docker:dind
   before_script:
-    # - amazon-linux-extras install docker
+    - amazon-linux-extras install docker
     - aws --version
     - docker --version
     - pwd && ls -ltar && df -h
