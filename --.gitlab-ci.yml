@@ -1,0 +1,31 @@
+stages:          # List of stages for jobs, and their order of execution
+  - build
+  # - test
+  # - deploy
+
+variables:
+  DOCKER_REGISTRY: 555726879390.dkr.ecr.us-east-1.amazonaws.com
+  AWS_DEFAULT_REGION: us-east-1
+  APP_NAME: clarusway-repo/petclinic-app-dev
+  DOCKER_HOST: tcp://docker:2375
+
+build_react_image:
+  stage: build
+  image: 
+    name: amazon/aws-cli
+    entrypoint: [""]
+  services:
+    - docker:dind
+  before_script:
+    - amazon-linux-extras install docker
+    - aws --version
+    - docker --version
+    - pwd && ls -ltar && df -h
+  script:
+    - docker build -t $DOCKER_REGISTRY/$APP_NAME:$CI_PIPELINE_IID . 
+    - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+    - docker push $DOCKER_REGISTRY/$APP_NAME:$CI_PIPELINE_IID
+  rules:
+    - if: ($CI_COMMIT_BRANCH == "main") && ($CI_PIPELINE_SOURCE == "schedule")
+      changes:
+      - src/*
