@@ -11,6 +11,8 @@ variables:
 
 build_react_image:
   stage: build
+  tags:
+    - shell_runner_01
   image: 
     name: amazon/aws-cli
     entrypoint: [""]
