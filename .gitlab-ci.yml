@@ -1,7 +1,7 @@
 stages:          # List of stages for jobs, and their order of execution
   - build
   # - test
-  # - deploy
+  - deploy
 
 variables:
   DOCKER_REGISTRY: 555726879390.dkr.ecr.us-east-1.amazonaws.com
@@ -29,3 +29,21 @@ build_react_image:
     - if: ($CI_COMMIT_BRANCH == "main") && ($CI_PIPELINE_SOURCE == "schedule")
       changes:
       - src/*
+
+
+deploy_terraform:
+  stage: deploy
+  image: 
+    name: amazon/aws-cli
+    entrypoint: [""]
+  before_script:
+    - amazon-linux-extras install docker
+    - yum install -y yum-utils
+    - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+    - yum -y install terraform
+    - aws --version
+    - docker --version
+    - terraform --version
+    - pwd && ls -ltar && df -h
+  script:
+    - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
