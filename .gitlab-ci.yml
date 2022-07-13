@@ -95,22 +95,23 @@ test:
     # - sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
     # - sudo apt-get update && sudo apt-get install terraform
     # - sudo terraform --version
-    # # # install docker
-    # - sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-    # - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    # - sudo apt-key fingerprint 0EBFCD88
-    # - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-    # - apt-cache policy docker-ce
-    # - sudo apt-get install -y docker-ce
-    # - sudo systemctl status docker
-    # - sudo usermod -aG docker $USER
-    # - sudo systemctl enable docker
-    # - docker --version
+    # # install docker
+    - sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    - sudo apt-key fingerprint 0EBFCD88
+    - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+    - apt-cache policy docker-ce
+    - sudo apt-get install -y docker-ce
+    - sudo systemctl status docker
+    - sudo usermod -aG docker $USER
+    - sudo systemctl enable docker
+    - docker --version
     # install aws cli
     - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     - sudo apt-get install -y unzip 
     - unzip awscliv2.zip
     - sudo ./aws/install
     - aws --version
+
     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
     - aws s3 ls
