@@ -115,7 +115,8 @@ test:
     # - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
     # - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
     # - aws configure set region $AWS_DEFAULT_REGION
-    #- printf "[eb-cli]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+    - mkdir ./.aws/credentials
+    - printf "[eb-cli]\naws_access_key_id = %s\naws_secret_access_key = %s\n" "$AWS_ACCESS_KEY_ID" "$AWS_SECRET_ACCESS_KEY" >> ./.aws/credentials
     # - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
-    #- aws s3 ls
+    - aws s3 ls
     - sleep 10000
