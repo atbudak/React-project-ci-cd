@@ -58,7 +58,7 @@ build_terraform_env:
    - if: ($CI_COMMIT_BRANCH == "main")
      when: always
    - when: never
-   
+
 cache:
   key: $CI_COMMIT_REF_SLUG
 
@@ -78,3 +78,4 @@ initalize_terraform:
    - when: never
   dependencies:
     - build_terraform_env
+  when: manual
