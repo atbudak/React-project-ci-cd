@@ -61,11 +61,9 @@ initalize_terraform:
   stage: build
   before_script:
     - aws --version
-    - docker --version
     - terraform --version
     - pwd && ls -ltar && df -h
   script:
     - terraform init
   dependencies:
     - build_terraform_env
-  when: manual
