@@ -29,7 +29,7 @@ build_react_image:
     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
     - docker push $DOCKER_REGISTRY/$APP_NAME:$CI_PIPELINE_IID
   rules:
-    - if: ($CI_COMMIT_BRANCH == "main") || ($CI_PIPELINE_SOURCE == "schedule")
+    - if: ($CI_COMMIT_BRANCH == "dev") || ($CI_PIPELINE_SOURCE == "schedule")
       changes:
       - src/*
 
@@ -55,7 +55,7 @@ build_terraform_env:
   allow_failure: false
   
   rules:
-   - if: ($CI_COMMIT_BRANCH == "main")
+   - if: ($CI_COMMIT_BRANCH == "dev")
      when: always
    - when: never
 
@@ -73,7 +73,7 @@ initalize_terraform:
     - terraform init
   
   rules:
-   - if: ($CI_COMMIT_BRANCH == "main")
+   - if: ($CI_COMMIT_BRANCH == "dev")
      when: always
    - when: never
   needs: ['build_terraform_env']
