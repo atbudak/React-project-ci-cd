@@ -76,6 +76,4 @@ initalize_terraform:
    - if: ($CI_COMMIT_BRANCH == "main")
      when: always
    - when: never
-  dependencies:
-    - build_terraform_env
-  when: manual
+  needs: ['build_terraform_env']
