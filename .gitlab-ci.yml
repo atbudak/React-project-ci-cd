@@ -1,3 +1,7 @@
+image: 
+    name: amazon/aws-cli
+    entrypoint: [""]
+
 stages:          # List of stages for jobs, and their order of execution
   - build
   - deploy
@@ -9,11 +13,7 @@ variables:
   DOCKER_HOST: tcp://docker:2375
 
 build_react_image:
-  image: 
-    name: amazon/aws-cli
-    entrypoint: [""]
   stage: build
-
   services:
     - docker:dind
   before_script:
@@ -25,17 +25,14 @@ build_react_image:
     - docker build -t $DOCKER_REGISTRY/$APP_NAME:$CI_PIPELINE_IID . 
     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
     - docker push $DOCKER_REGISTRY/$APP_NAME:$CI_PIPELINE_IID
-  rules:
-    - if: ($CI_COMMIT_BRANCH == "dev") && ($CI_PIPELINE_SOURCE == "schedule")
-      changes:
-      - src/*
+  # rules:
+  #   - if: ($CI_COMMIT_BRANCH == "dev") && ($CI_PIPELINE_SOURCE == "schedule")
+  #     changes:
+  #     - src/*
 
 
 build_terraform_env:
   stage: deploy
-  image: 
-    name: amazon/aws-cli
-    entrypoint: [""]
   services:
     - docker:dind
   before_script:
