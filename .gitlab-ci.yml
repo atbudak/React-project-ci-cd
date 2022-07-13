@@ -37,9 +37,9 @@ build_react_image:
 
 build_terraform_env:
   stage: build
-  # image: 
-  #   name: amazon/aws-cli
-  #   entrypoint: [""]
+  image: 
+    name: amazon/aws-cli
+    entrypoint: [""]
   tags:
     - "docker_runner_01"
   services:
@@ -69,7 +69,7 @@ initalize_terraform:
   stage: build
   tags:
   - "docker_runner_01"
-  
+
   before_script:
     - aws --version
     - terraform --version
