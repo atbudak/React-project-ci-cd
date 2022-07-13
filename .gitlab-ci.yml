@@ -112,6 +112,6 @@ test:
     - unzip awscliv2.zip
     - sudo ./aws/install --update
     - aws --version
-
+    - aws configure
     # - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
     - aws s3 ls
