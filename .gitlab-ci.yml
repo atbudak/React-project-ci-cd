@@ -59,8 +59,8 @@ build_terraform_env:
      when: always
    - when: never
 
-cache:
-  key: $CI_COMMIT_REF_SLUG
+  cache:
+    key: $CI_COMMIT_REF_SLUG
 
 initalize_terraform:
   stage: build
