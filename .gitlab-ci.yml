@@ -36,8 +36,6 @@ build_terraform_env:
   image: 
     name: amazon/aws-cli
     entrypoint: [""]
-  tags:
-    - "docker_runner_01"
   services:
     - docker:dind
   before_script:
