@@ -1,4 +1,9 @@
+image: 
+  name: amazon/aws-cli
+  entrypoint: [""]
+
 stages:          # List of stages for jobs, and their order of execution
+  - scheduled_job_for_image
   - build
   # - test
   - deploy
@@ -10,10 +15,8 @@ variables:
   DOCKER_HOST: tcp://docker:2375
 
 build_react_image:
-  stage: build
-  image: 
-    name: amazon/aws-cli
-    entrypoint: [""]
+  stage: scheduled_job_for_image
+
   services:
     - docker:dind
   before_script:
@@ -26,16 +29,16 @@ build_react_image:
     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
     - docker push $DOCKER_REGISTRY/$APP_NAME:$CI_PIPELINE_IID
   rules:
-    - if: ($CI_COMMIT_BRANCH == "main") && ($CI_PIPELINE_SOURCE == "schedule")
+    - if: ($CI_COMMIT_BRANCH == "main") || ($CI_PIPELINE_SOURCE == "schedule")
       changes:
       - src/*
 
 
-deploy_terraform:
-  stage: deploy
-  image: 
-    name: amazon/aws-cli
-    entrypoint: [""]
+build_terraform_env:
+  stage: build
+  # image: 
+  #   name: amazon/aws-cli
+  #   entrypoint: [""]
   services:
     - docker:dind
   before_script:
@@ -49,3 +52,20 @@ deploy_terraform:
     - pwd && ls -ltar && df -h
   script:
     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+  allow_failure: false
+
+cache:
+  key: $CI_COMMIT_REF_SLUG
+
+initalize_terraform:
+  stage: build
+  before_script:
+    - aws --version
+    - docker --version
+    - terraform --version
+    - pwd && ls -ltar && df -h
+  script:
+    - terraform init
+  dependencies:
+    - build_terraform_env
+  when: manual
