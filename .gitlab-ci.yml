@@ -114,7 +114,7 @@ test:
       $(lsb_release -cs) \
       stable"
     # - sudo apt-get update
-    - sudo apt-get install -y docker-ce
+    - sudo apt-get install -y docker-io
     - sudo groupadd docker
     - sudo usermod -aG docker $USER
     - sudo systemctl enable docker
