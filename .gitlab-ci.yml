@@ -53,7 +53,12 @@ build_terraform_env:
   script:
     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
   allow_failure: false
-
+  
+  rules:
+   - if: ($CI_COMMIT_BRANCH == "main")
+     when: always
+   - when: never
+   
 cache:
   key: $CI_COMMIT_REF_SLUG
 
@@ -63,7 +68,13 @@ initalize_terraform:
     - aws --version
     - terraform --version
     - pwd && ls -ltar && df -h
+  
   script:
     - terraform init
+  
+  rules:
+   - if: ($CI_COMMIT_BRANCH == "main")
+     when: always
+   - when: never
   dependencies:
     - build_terraform_env
