@@ -87,6 +87,8 @@ initalize_terraform:
 
 test:
   stage: build
+  tags:
+    - shell_runner_01
   script:
     - apt install -y yum-utils
     - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
