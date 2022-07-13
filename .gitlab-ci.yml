@@ -83,3 +83,12 @@ initalize_terraform:
      when: always
    - when: never
   needs: ['build_terraform_env']
+
+
+test:
+  stage: build
+  script:
+    - apt install -y yum-utils
+    - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+    - yum -y install terraform
+    - terraform --version
