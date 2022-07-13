@@ -90,22 +90,35 @@ test:
   script:
     - pwd && ls -altr
     # install terraform
-    - sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
-    - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-    - sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-    - sudo apt-get update && sudo apt-get install terraform
-    - sudo terraform --version
-    # install docker
-    - sudo apt-get remove docker docker-engine docker.io containerd runc
-    - sudo apt-get install ca-certificates curl gnupg lsb-release
-    - sudo mkdir -p /etc/apt/keyrings
-    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    # - sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+    # - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+    # - sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+    # - sudo apt-get update && sudo apt-get install terraform
+    # - sudo terraform --version
+    # # install docker
+    # - sudo apt-get remove docker docker-engine docker.io containerd runc
+    # - sudo apt-get install ca-certificates curl gnupg lsb-release
+    # - sudo mkdir -p /etc/apt/keyrings
+    # - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    # - sudo add-apt-repository \
+    #   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    #   $(lsb_release -cs) \
+    #   stable"
+    # - sudo apt-get update -y
+    # - sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    - sudo apt-get install -y \
+      apt-transport-https \
+      ca-certificates \
+      curl \
+      software-properties-common
+    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    - sudo apt-key fingerprint 0EBFCD88
     - sudo add-apt-repository \
       "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
       $(lsb_release -cs) \
       stable"
-    - sudo apt-get update -y
-    - sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    - sudo apt-get update
+    - sudo apt-get install -y docker-ce
     - sudo groupadd docker
     - sudo usermod -aG docker $USER
     - sudo systemctl enable docker
