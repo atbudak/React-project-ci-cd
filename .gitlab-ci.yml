@@ -36,6 +36,8 @@ deploy_terraform:
   image: 
     name: amazon/aws-cli
     entrypoint: [""]
+  services:
+    - docker:dind
   before_script:
     - amazon-linux-extras install docker
     - yum install -y yum-utils
