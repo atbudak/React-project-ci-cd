@@ -89,3 +89,5 @@ build_terraform_env:
     - unzip awscliv2.zip
     - sudo ./aws/install --update
     - aws --version && ls -altr && realpath .
+  script:
+    - ls
