@@ -2,7 +2,7 @@
 stages:          # List of stages for jobs, and their order of execution
   - build
   - scheduled_for_build_image
-  - deploy
+  # - deploy
 
 variables:
   DOCKER_REGISTRY: 555726879390.dkr.ecr.us-east-1.amazonaws.com
@@ -33,46 +33,46 @@ build_react_image:
       - src/*
 
 
-build_terraform_env:
-  stage: build
-  services:
-    - docker:dind
-  before_script:
-    - amazon-linux-extras install docker
-    - yum install -y yum-utils
-    - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
-    - yum -y install terraform
-    - aws --version
-    - docker --version
-    - terraform --version
-    - pwd && ls -ltar && df -h
-  script:
-    - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
-    - aws s3 ls
-  allow_failure: false
+# build_terraform_env:
+#   stage: build
+#   services:
+#     - docker:dind
+#   before_script:
+#     - amazon-linux-extras install docker
+#     - yum install -y yum-utils
+#     - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+#     - yum -y install terraform
+#     - aws --version
+#     - docker --version
+#     - terraform --version
+#     - pwd && ls -ltar && df -h
+#   script:
+#     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+#     - aws s3 ls
+#   allow_failure: false
   
-  rules:
-   - if: ($CI_COMMIT_BRANCH == "dev")
-     when: always
-   - when: never
+#   rules:
+#    - if: ($CI_COMMIT_BRANCH == "dev")
+#      when: always
+#    - when: never
 
-  cache:
-    key: $CI_COMMIT_REF_SLUG
+#   cache:
+#     key: $CI_COMMIT_REF_SLUG
 
 
-test:
+build_terraform_env:
   stage: build
   tags:
     - shell_runner_01
-  script:
+  before_script:
     - pwd && ls -altr && whoami
     # install terraform
-    # - sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
-    # - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-    # - sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-    # - sudo apt-get update && sudo apt-get install terraform
-    # - sudo terraform --version
-    # # install docker
+    - sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+    - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+    - sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+    - sudo apt-get update && sudo apt-get install terraform
+    - sudo terraform --version
+    # install docker
     # - sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
     # - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     # - sudo apt-key fingerprint 0EBFCD88
@@ -88,6 +88,4 @@ test:
     - sudo apt-get install -y unzip 
     - unzip awscliv2.zip
     - sudo ./aws/install --update
-    - aws --version && ls -altr && realpath . && ls ./aws/install -al
-    #- aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
-    - aws s3 ls
+    - aws --version && ls -altr && realpath .

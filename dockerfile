@@ -22,6 +22,7 @@ RUN npm run build
 #pull the official nginx:1.19.0 base image
 FROM nginx:1.19.0
 #copies React to the container directory
+EXPOSE 3000
 # Set working directory to nginx resources directory
 WORKDIR /usr/share/nginx/html
 # Remove default nginx static resources
