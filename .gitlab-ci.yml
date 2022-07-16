@@ -130,7 +130,7 @@ build_terraform_env:
 
   rules:
     - if: ($CI_COMMIT_BRANCH == "test")
-      when: always
+      when: never
     - when: never
 
   cache:
@@ -153,6 +153,7 @@ deploy_terraform_env:
     - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
     - cd ./Terraform
+    - terraform init 
     # install docker
     # - sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
     # - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
