@@ -88,9 +88,11 @@ building_app:
 testing_app: 
   stage: app_test
   image: node:16
+  before_script:
+    - npm install
   script:
     - echo "Testing App"
-    - npm test # Run tests without interactive prompt CI=true 
+    - CI=true npm test # Run tests without interactive prompt CI=true 
   dependencies:
     - building_app
   rules:
