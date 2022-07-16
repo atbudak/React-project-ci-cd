@@ -71,7 +71,7 @@ building_app:
     - echo "Build successfully!"
   rules:
     - if: ($CI_COMMIT_BRANCH == "test")
-      when: always
+      when: never
     - when: never
 
   artifacts:
@@ -90,7 +90,7 @@ testing_app:
   image: node:16
   script:
     - echo "Testing App"
-    - CI=true npm test # Run tests without interactive prompt
+    - npm test # Run tests without interactive prompt CI=true 
   dependencies:
     - building_app
   rules:
@@ -119,8 +119,8 @@ build_terraform_env:
   script:
     - terraform plan
 
-  dependencies:
-    - testing_app
+  # dependencies:
+  #   - testing_app
 
   rules:
     - if: ($CI_COMMIT_BRANCH == "test")
