@@ -67,7 +67,7 @@ building_app:
   image: node
   script: 
     - npm install 
-    - npm build
+    - npm run build
     - echo "Build successfully!"
   rules:
     - if: ($CI_COMMIT_BRANCH == "test")
