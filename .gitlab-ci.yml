@@ -176,10 +176,9 @@ deploy_terraform_env:
     #- terraform apply -auto-approve
   # dependencies:
   #   - build_terraform_env
-  when: manual
   rules:
     - if: ($CI_COMMIT_BRANCH == "test")
-      when: always
+      when: manual
     - when: never
 
 
