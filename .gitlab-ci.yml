@@ -87,7 +87,7 @@ building_app:
 
 testing_app: 
   stage: app_test
-  image: node
+  image: node:16
   script:
     - echo "Testing App"
     - CI=true npm test # Run tests without interactive prompt
