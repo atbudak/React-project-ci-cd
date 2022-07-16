@@ -1,0 +1,16 @@
+concurrent = 1
+check_interval = 0
+
+[session_server]
+  session_timeout = 1800
+
+[[runners]]
+  name = "ip-172-31-28-69"
+  url = "https://gitlab.com/"
+  token = "***"  # Enter your token from Gitlab > Your Project > Settings > CI/CD > Runners > Spesific Runner
+  executor = "shell"
+  [runners.custom_build_dir]
+  [runners.cache]
+    [runners.cache.s3]
+    [runners.cache.gcs]
+    [runners.cache.azure]
