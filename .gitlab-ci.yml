@@ -65,6 +65,8 @@ build_react_image:
 building_app:
   stage: app_build
   image: node:16
+  tags:
+    - docker_runner_01
   script: 
     - npm install 
     - npm run build
