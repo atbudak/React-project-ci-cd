@@ -73,7 +73,7 @@ building_app:
     - echo "Build successfully!"
   rules:
     - if: ($CI_COMMIT_BRANCH == "test")
-      when: never
+      when: always
     - when: never
 
   artifacts:
@@ -101,7 +101,7 @@ testing_app:
     - building_app
   rules:
     - if: ($CI_COMMIT_BRANCH == "test")
-      when: never
+      when: always
     - when: never
 
 build_terraform_env:
@@ -130,7 +130,7 @@ build_terraform_env:
 
   rules:
     - if: ($CI_COMMIT_BRANCH == "test")
-      when: never
+      when: always
     - when: never
 
   cache:
@@ -172,8 +172,9 @@ deploy_terraform_env:
     # - sudo ./aws/install --update
     # - aws --version && ls -altr && realpath .
   script:
-    - terraform apply -auto-approve
-    - sleep 5
+    - terraform apply -auto-approve -destroy
+    - terraform output
+    - sleep 60
     - terraform destroy -auto-approve
   # dependencies:
   #   - build_terraform_env
