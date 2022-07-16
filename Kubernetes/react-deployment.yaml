@@ -1,0 +1,28 @@
+---    
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stage
+  labels:
+    app: react-app
+  name: react-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: react-app
+  template:
+    metadata:
+      labels:
+        app: react-app
+    spec:
+      containers:
+        - image: ahmet1162/react-app:latest # for ecr <account-id>.dkr.ecr.<region>.amazonaws.com/<repositoriy-name:tag>
+          name: react-app
+          ports:
+            - containerPort: 80
+          resources: 
+            limits:
+              memory: "2Gi"
+              cpu: "500m"
+      restartPolicy: Always

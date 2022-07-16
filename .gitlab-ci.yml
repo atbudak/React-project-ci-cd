@@ -1,12 +1,10 @@
-image: 
-  name: amazon/aws-cli
-  entrypoint: [""]
 
 stages:          # List of stages for jobs, and their order of execution
-  - scheduled_job_for_image
-  - build
-  # - test
-  - deploy
+  - scheduled_for_build_image
+  - app_build
+  - app_test
+  - terraform_build
+  - terraform_deploy
 
 variables:
   DOCKER_REGISTRY: 555726879390.dkr.ecr.us-east-1.amazonaws.com
@@ -15,8 +13,11 @@ variables:
   DOCKER_HOST: tcp://docker:2375
 
 build_react_image:
-  stage: scheduled_job_for_image
+  image: 
+    name: amazon/aws-cli
+    entrypoint: [""]
 
+  stage: scheduled_for_build_image
   services:
     - docker:dind
   before_script:
@@ -29,51 +30,157 @@ build_react_image:
     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
     - docker push $DOCKER_REGISTRY/$APP_NAME:$CI_PIPELINE_IID
   rules:
-    - if: ($CI_COMMIT_BRANCH == "main") || ($CI_PIPELINE_SOURCE == "schedule")
+    - if: ($CI_COMMIT_BRANCH == "test") && ($CI_PIPELINE_SOURCE == "schedule")
       changes:
       - src/*
 
 
-build_terraform_env:
-  stage: build
-  # image: 
-  #   name: amazon/aws-cli
-  #   entrypoint: [""]
-  services:
-    - docker:dind
-  before_script:
-    - amazon-linux-extras install docker
-    - yum install -y yum-utils
-    - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
-    - yum -y install terraform
-    - aws --version
-    - docker --version
-    - terraform --version
-    - pwd && ls -ltar && df -h
-  script:
-    - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
-  allow_failure: false
+# build_terraform_env:
+#   stage: build
+#   services:
+#     - docker:dind
+#   before_script:
+#     - amazon-linux-extras install docker
+#     - yum install -y yum-utils
+#     - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+#     - yum -y install terraform
+#     - aws --version
+#     - docker --version
+#     - terraform --version
+#     - pwd && ls -ltar && df -h
+#   script:
+#     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
+#     - aws s3 ls
+#   allow_failure: false
   
+#   rules:
+#    - if: ($CI_COMMIT_BRANCH == "dev")
+#      when: always
+#    - when: never
+
+#   cache:
+#     key: $CI_COMMIT_REF_SLUG
+
+
+building_app:
+  stage: app_build
+  image: node:16
+  # tags:
+  #   - docker_runner_01
+  script: 
+    - npm install 
+    - npm run build
+    - echo "Build successfully!"
   rules:
-   - if: ($CI_COMMIT_BRANCH == "main")
-     when: always
-   - when: never
+    - if: ($CI_COMMIT_BRANCH == "test")
+      when: always
+    - when: never
+
+  artifacts:
+    expire_in: 6 hours
+    paths:
+      - build/ 
+  
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    policy: pull
+
+
+
+testing_app: 
+  stage: app_test
+  image: node:16
+  # tags:
+  # - docker_runner_01
+  before_script:
+    - npm install
+  script:
+    - echo "Testing App"
+    - CI=true npm test # Run tests without interactive prompt CI=true 
+  dependencies:
+    - building_app
+  rules:
+    - if: ($CI_COMMIT_BRANCH == "test")
+      when: always
+    - when: never
+
+build_terraform_env:
+  stage: terraform_build
+  tags:
+    - shell_runner_01
+  before_script:
+    - pwd && ls -altr && whoami
+    # install terraform
+    - sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+    - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+    - sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+    - sudo apt-get update && sudo apt-get install terraform
+    - sudo terraform --version
+    # define access keys
+    - export AWS_ACCESS_KEY=${AWS_ACCESS_KEY_ID}
+    - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    - cd ./Terraform
+    - terraform init 
+    - terraform fmt
+  script:
+    - terraform plan
+
+  dependencies:
+    - testing_app
+
+  rules:
+    - if: ($CI_COMMIT_BRANCH == "test")
+      when: always
+    - when: never
 
   cache:
     key: $CI_COMMIT_REF_SLUG
 
-initalize_terraform:
-  stage: build
+deploy_terraform_env:
+  stage: terraform_deploy
+  tags:
+    - shell_runner_01
   before_script:
-    - aws --version
-    - terraform --version
-    - pwd && ls -ltar && df -h
-  
+    - pwd && ls -altr && whoami
+    # install terraform
+    - sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+    - curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+    - sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+    - sudo apt-get update && sudo apt-get install terraform
+    - sudo terraform --version
+    # define access keys
+    - export AWS_ACCESS_KEY=${AWS_ACCESS_KEY_ID}
+    - export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
+    - cd ./Terraform
+    - terraform init 
+    # install docker
+    # - sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+    # - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    # - sudo apt-key fingerprint 0EBFCD88
+    # - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+    # - apt-cache policy docker-ce
+    # - sudo apt-get install -y docker-ce
+    # - sudo systemctl status docker
+    # - sudo usermod -aG docker $USER
+    # - sudo systemctl enable docker
+    # - docker --version
+    # install aws cli
+    # - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    # - sudo apt-get install -y unzip 
+    # - unzip awscliv2.zip
+    # - sudo ./aws/install --update
+    # - aws --version && ls -altr && realpath .
   script:
-    - terraform init
-  
+    - terraform apply -auto-approve
+    - terraform output
+    - sleep 60
+    - terraform destroy -auto-approve
+  dependencies:
+    - build_terraform_env
   rules:
-   - if: ($CI_COMMIT_BRANCH == "main")
-     when: always
-   - when: never
-  needs: ['build_terraform_env']
+    - if: ($CI_COMMIT_BRANCH == "test")
+      when: manual
+    - when: never
+
+
