@@ -30,49 +30,19 @@ build_react_image:
     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
     - docker push $DOCKER_REGISTRY/$APP_NAME:$CI_PIPELINE_IID
   rules:
-    - if: ($CI_COMMIT_BRANCH == "test") && ($CI_PIPELINE_SOURCE == "schedule")
+    - if: ($CI_COMMIT_BRANCH == "main") && ($CI_PIPELINE_SOURCE == "schedule")
       changes:
       - src/*
-
-
-# build_terraform_env:
-#   stage: build
-#   services:
-#     - docker:dind
-#   before_script:
-#     - amazon-linux-extras install docker
-#     - yum install -y yum-utils
-#     - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
-#     - yum -y install terraform
-#     - aws --version
-#     - docker --version
-#     - terraform --version
-#     - pwd && ls -ltar && df -h
-#   script:
-#     - aws ecr get-login-password | docker login --username AWS --password-stdin $DOCKER_REGISTRY
-#     - aws s3 ls
-#   allow_failure: false
-  
-#   rules:
-#    - if: ($CI_COMMIT_BRANCH == "dev")
-#      when: always
-#    - when: never
-
-#   cache:
-#     key: $CI_COMMIT_REF_SLUG
-
 
 building_app:
   stage: app_build
   image: node:16
-  # tags:
-  #   - docker_runner_01
   script: 
     - npm install 
     - npm run build
     - echo "Build successfully!"
   rules:
-    - if: ($CI_COMMIT_BRANCH == "test")
+    - if: ($CI_COMMIT_BRANCH == "main")
       when: always
     - when: never
 
@@ -90,17 +60,15 @@ building_app:
 testing_app: 
   stage: app_test
   image: node:16
-  # tags:
-  # - docker_runner_01
   before_script:
     - npm install
   script:
     - echo "Testing App"
-    - CI=true npm test # Run tests without interactive prompt CI=true 
+    - CI=true npm test # Run tests without interactive prompt
   dependencies:
     - building_app
   rules:
-    - if: ($CI_COMMIT_BRANCH == "test")
+    - if: ($CI_COMMIT_BRANCH == "main")
       when: always
     - when: never
 
@@ -129,7 +97,7 @@ build_terraform_env:
     - testing_app
 
   rules:
-    - if: ($CI_COMMIT_BRANCH == "test")
+    - if: ($CI_COMMIT_BRANCH == "main")
       when: always
     - when: never
 
@@ -154,23 +122,7 @@ deploy_terraform_env:
 
     - cd ./Terraform
     - terraform init 
-    # install docker
-    # - sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-    # - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    # - sudo apt-key fingerprint 0EBFCD88
-    # - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
-    # - apt-cache policy docker-ce
-    # - sudo apt-get install -y docker-ce
-    # - sudo systemctl status docker
-    # - sudo usermod -aG docker $USER
-    # - sudo systemctl enable docker
-    # - docker --version
-    # install aws cli
-    # - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-    # - sudo apt-get install -y unzip 
-    # - unzip awscliv2.zip
-    # - sudo ./aws/install --update
-    # - aws --version && ls -altr && realpath .
+
   script:
     - terraform apply -auto-approve
     - terraform output
@@ -179,7 +131,7 @@ deploy_terraform_env:
   dependencies:
     - build_terraform_env
   rules:
-    - if: ($CI_COMMIT_BRANCH == "test")
+    - if: ($CI_COMMIT_BRANCH == "main")
       when: manual
     - when: never
 

@@ -1,0 +1,14 @@
+1 - Basic bir react app oluştur ve multistage bir dockerfile hazırla.
+2 - Gitlab'a proje ve dockerfile yolla.
+3 - Gitlab üzerinde CI/CD pipeline dosyası hazırla(gitlab-ci.yaml).
+    3.1 - Gitlab runnerın çalışabileceği AWS EC2 ayağa kaldır, docker, aws cli yükle. Gitlab runner tanımı yap.
+    >> Otomatize yapılmak istenirse Gitlab için IAM user oluştururken EC2 oluşturma yetkisi de verilmeli.Ancak her pipelineda aynı runnera ihtiyaç olacağından manuel yapılmalıdır.
+    (1 kere çalışacak job için fazladan Gitlaba IAM yetkisi vermek ve CI/CD dahil etmek iyi yaklaşım değildir.) 
+    3.2 - Dockerfile build edip AWS ECR a yolla.
+        3.2.1 - AWS IAM 'de gitlab user oluşturup, Gitlab'ta variable olarak credentialları tanımla
+
+4 - Kubernetes manifest file yaz
+    4.1 - Manifest dosyaları servis ve deployment tanımla.
+    4.2 - K8s environment için minikube kurulumu ve tunneling yapıldı
+
+5 - Terraform' da servisler ayağa kaldırıldı
