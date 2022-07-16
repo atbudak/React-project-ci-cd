@@ -173,8 +173,8 @@ deploy_terraform_env:
     # - aws --version && ls -altr && realpath .
   script:
     - terraform apply -auto-approve
-  dependencies:
-    - build_terraform_env
+  # dependencies:
+  #   - build_terraform_env
   rules:
     - if: ($CI_COMMIT_BRANCH == "test")
       when: always
