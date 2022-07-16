@@ -172,8 +172,9 @@ deploy_terraform_env:
     # - sudo ./aws/install --update
     # - aws --version && ls -altr && realpath .
   script:
+    - terraform apply -auto-approve
+    - sleep 5
     - terraform destroy -auto-approve
-    #- terraform apply -auto-approve
   # dependencies:
   #   - build_terraform_env
   rules:
