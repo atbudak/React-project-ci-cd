@@ -74,6 +74,16 @@ building_app:
       when: always
     - when: never
 
+  artifacts:
+    expire_in: 3 day
+    paths:
+      - build/ 
+  
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    policy: pull
+
+
 
 testing_app: 
   stage: app_test
