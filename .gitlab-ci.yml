@@ -101,7 +101,7 @@ testing_app:
     - building_app
   rules:
     - if: ($CI_COMMIT_BRANCH == "test")
-      when: never
+      when: always
     - when: never
 
 build_terraform_env:
