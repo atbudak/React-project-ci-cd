@@ -40,6 +40,7 @@ building_app:
   script: 
     - npm install 
     - npm run build
+    - ls -altr && pwd && whoami
     - echo "Build successfully!"
   rules:
     - if: ($CI_COMMIT_BRANCH == "main")
@@ -53,6 +54,8 @@ building_app:
   
   cache:
     key: $CI_COMMIT_REF_SLUG
+    paths:
+      - node_modules/
     policy: pull
 
 
@@ -62,6 +65,8 @@ testing_app:
   image: node:16
   before_script:
     - npm install
+    - ls -altr && pwd && whoami
+    - ls -altr $(pwd)/build
   script:
     - echo "Testing App"
     - CI=true npm test # Run tests without interactive prompt
